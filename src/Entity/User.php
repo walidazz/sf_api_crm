@@ -174,7 +174,6 @@ class User implements UserInterface
             $this->customers[] = $customer;
             $customer->setUser($this);
         }
-
         return $this;
     }
 
