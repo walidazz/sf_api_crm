@@ -15,154 +15,155 @@ use Symfony\Component\Serializer\Annotation\Groups;
 //chapitre 49 -> à voir
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
- * @ApiResource(normalizationContext={ "groups"={"curstomers_read" } })
+ * @ApiResource(normalizationContext={ "groups"={"curstomers_read", "invoices_read" } })
  *
  * @ApiFilter(SearchFilter::class, properties={"firstName":"partial","lastName","company"})
  * @ApiFilter(OrderFilter::class)
  */
 class Customer
 {
- /**
-  * @ORM\Id()
-  * @ORM\GeneratedValue()
-  * @ORM\Column(type="integer")
-  */
- private $id;
+    /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
+     * @Groups({"customers_read","invoices_read"})
+     */
+    private $id;
 
- /**
-  * @ORM\Column(type="string", length=255)
-  * @Groups({"customers_read","invoices_read"})
-  */
- private $firstName;
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"customers_read","invoices_read"})
+     */
+    private $firstName;
 
- /**
-  * @ORM\Column(type="string", length=255)
-  * @Groups({"customers_read","invoices_read"})
-  */
- private $lastName;
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"customers_read","invoices_read"})
+     */
+    private $lastName;
 
- /**
-  * @ORM\Column(type="string", length=255)
-  * @Groups({"customers_read","invoices_read"})
-  */
- private $email;
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"customers_read","invoices_read"})
+     */
+    private $email;
 
- /**
-  * @ORM\Column(type="string", length=255, nullable=true)
-  * @Groups({"customers_read","invoices_read"})
-  */
- private $company;
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"customers_read","invoices_read"})
+     */
+    private $company;
 
- /**
-  * @ORM\OneToMany(targetEntity=Invoice::class, mappedBy="customer")
-  * @Groups({"customers_read","invoices_read"})
-  */
- private $invoices;
+    /**
+     * @ORM\OneToMany(targetEntity=Invoice::class, mappedBy="customer")
+     * @Groups({"customers_read","invoices_read"})
+     */
+    private $invoices;
 
- /**
-  * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
-  * @Groups({"customers_read","invoices_read"})
-  */
- private $user;
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
+     * @Groups({"customers_read","invoices_read"})
+     */
+    private $user;
 
- public function __construct()
- {
-  $this->invoices = new ArrayCollection();
- }
+    public function __construct()
+    {
+        $this->invoices = new ArrayCollection();
+    }
 
- public function getId(): ?int
- {
-  return $this->id;
- }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
- public function getFirstName(): ?string
- {
-  return $this->firstName;
- }
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
 
- public function setFirstName(string $firstName): self
- {
-  $this->firstName = $firstName;
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
 
-  return $this;
- }
+        return $this;
+    }
 
- public function getLastName(): ?string
- {
-  return $this->lastName;
- }
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
 
- public function setLastName(string $lastName): self
- {
-  $this->lastName = $lastName;
+    public function setLastName(string $lastName): self
+    {
+        $this->lastName = $lastName;
 
-  return $this;
- }
+        return $this;
+    }
 
- public function getEmail(): ?string
- {
-  return $this->email;
- }
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
 
- public function setEmail(string $email): self
- {
-  $this->email = $email;
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
 
-  return $this;
- }
+        return $this;
+    }
 
- public function getCompany(): ?string
- {
-  return $this->company;
- }
+    public function getCompany(): ?string
+    {
+        return $this->company;
+    }
 
- public function setCompany(?string $company): self
- {
-  $this->company = $company;
+    public function setCompany(?string $company): self
+    {
+        $this->company = $company;
 
-  return $this;
- }
+        return $this;
+    }
 
- /**
-  * @return Collection|Invoice[]
-  */
- public function getInvoices(): Collection
- {
-  return $this->invoices;
- }
+    /**
+     * @return Collection|Invoice[]
+     */
+    public function getInvoices(): Collection
+    {
+        return $this->invoices;
+    }
 
- public function addInvoice(Invoice $invoice): self
- {
-  if (!$this->invoices->contains($invoice)) {
-   $this->invoices[] = $invoice;
-   $invoice->setCustomer($this);
-  }
+    public function addInvoice(Invoice $invoice): self
+    {
+        if (!$this->invoices->contains($invoice)) {
+            $this->invoices[] = $invoice;
+            $invoice->setCustomer($this);
+        }
 
-  return $this;
- }
+        return $this;
+    }
 
- public function removeInvoice(Invoice $invoice): self
- {
-  if ($this->invoices->contains($invoice)) {
-   $this->invoices->removeElement($invoice);
-   // set the owning side to null (unless already changed)
-   if ($invoice->getCustomer() === $this) {
-    $invoice->setCustomer(null);
-   }
-  }
+    public function removeInvoice(Invoice $invoice): self
+    {
+        if ($this->invoices->contains($invoice)) {
+            $this->invoices->removeElement($invoice);
+            // set the owning side to null (unless already changed)
+            if ($invoice->getCustomer() === $this) {
+                $invoice->setCustomer(null);
+            }
+        }
 
-  return $this;
- }
+        return $this;
+    }
 
- public function getUser(): ?User
- {
-  return $this->user;
- }
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
 
- public function setUser(?User $user): self
- {
-  $this->user = $user;
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
-  return $this;
- }
+        return $this;
+    }
 }
