@@ -12,10 +12,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-//chapitre 49 -> à voir
+//chapitre 54 -> à voir
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
- * @ApiResource(normalizationContext={ "groups"={"curstomers_read", "invoices_read" } })
+ * @ApiResource(normalizationContext={ "groups"={"customers_read" } })
  *
  * @ApiFilter(SearchFilter::class, properties={"firstName":"partial","lastName","company"})
  * @ApiFilter(OrderFilter::class)
@@ -56,15 +56,45 @@ class Customer
 
     /**
      * @ORM\OneToMany(targetEntity=Invoice::class, mappedBy="customer")
-     * @Groups({"customers_read","invoices_read"})
+     * @Groups({"customers_read"})
      */
     private $invoices;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
-     * @Groups({"customers_read","invoices_read"})
+     * @Groups({"customers_read"})
      */
     private $user;
+
+    /**
+     * Permet de récupérer le total
+     * @Groups({"customers_read"})
+     *
+     * @return float
+     */
+    public function getTotalAmount(): float
+    {
+        return array_reduce($this->invoices->toArray(), function ($total, $invoice) {
+            return $total + $invoice->getAmount();
+        }, 0);
+    }
+
+
+    /**
+     * Récupérer le montant total non payé (montant total hors factures payés ou annulées)
+     * @groups({"customers_read"})
+     *
+     * @return float
+     */
+    public function getUnpaidAmount(): float
+    {
+        return array_reduce($this->invoices->toArray(), function ($total, $invoice) {
+
+
+            return $total + ($invoice->getStatus() === "PAID" || $invoice->getStatus() === "CANCELLED" ? 0 : $invoice->getAmount());
+        }, 0);
+    }
+
 
     public function __construct()
     {

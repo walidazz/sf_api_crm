@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
+use App\Entity\User;
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\InvoiceRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use App\Repository\InvoiceRepository;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 
 /**
  * @ORM\Entity(repositoryClass=InvoiceRepository::class)
@@ -32,19 +33,19 @@ class Invoice
 
     /**
      * @ORM\Column(type="float")
-     * @Groups({"invoices_read"})
+     * @Groups({"invoices_read","customers_read"})
      */
     private $amount;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"invoices_read"})
+     * @Groups({"invoices_read","customers_read"})
      */
     private $sentAt;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"invoices_read"})
+     * @Groups({"invoices_read","customers_read"})
      */
     private $status;
 
@@ -57,9 +58,20 @@ class Invoice
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"invoices_read"})
+     * @Groups({"invoices_read","customers_read"})
      */
     private $chrono;
+
+/**
+ * Permer de récupérer le User à qui appartient finalement la facture
+ * @Groups({"invoices_read"})
+ *
+ * @return User
+ */
+    public function getUser(): User
+    {
+      return $this->customer->getUser();  
+    }
 
     public function getId(): ?int
     {
