@@ -11,16 +11,32 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 
 /**
- * @ORM\Entity(repositoryClass=InvoiceRepository::class)
+ * @ORM\Entity(repositoryClass="App\Repository\InvoiceRepository")
  * @ApiResource(
- * attributes={
- * "pagination_enabled"=true,
- * "pagination_items_per_page"=20,
- * "order": {"amount":"asc"}
- * },
- * normalizationContext={"groups"={"invoices_read"}}
+ *  subresourceOperations={
+ *      "api_customers_invoices_get_subresource"={
+ *          "normalization_context"={"groups"={"invoices_subresource"}}
+ *      }
+ *  },
+ *  itemOperations={"GET", "PUT", "DELETE", "increment"={
+ *       "method"="post", 
+ *       "path"="/invoices/{id}/increment", 
+ *       "controller"="App\Controller\InvoiceIncrementationController", 
+ *       "swagger_context"={
+ *          "summary"="Incrémente une facture",
+ *          "description"="Incrémente le chrono d'une facture donnée"
+ *       }
+ *     }
+ *  },
+ *  attributes={
+ *      "pagination_enabled"=false,
+ *      "pagination_items_per_page"=20,
+ *      "order": {"sentAt":"desc"}
+ *  },
+ *  normalizationContext={"groups"={"invoices_read"}},
+ *  denormalizationContext={"disable_type_enforcement"=true}
  * )
- * @ApiFilter(OrderFilter::class, properties={"amount", "sentAt"})
+ * @ApiFilter(OrderFilter::class, properties={"amount","sentAt"})
  */
 class Invoice
 {
@@ -33,13 +49,13 @@ class Invoice
 
     /**
      * @ORM\Column(type="float")
-     * @Groups({"invoices_read","customers_read"})
+     * @Groups({"invoices_read","customers_read","invoices_subresource"})
      */
     private $amount;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"invoices_read","customers_read"})
+     * @Groups({"invoices_read","customers_read","invoices_subresource"})
      */
     private $sentAt;
 
@@ -58,19 +74,19 @@ class Invoice
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"invoices_read","customers_read"})
+     * @Groups({"invoices_read","customers_read","invoices_subresource"})
      */
     private $chrono;
 
-/**
- * Permer de récupérer le User à qui appartient finalement la facture
- * @Groups({"invoices_read"})
- *
- * @return User
- */
+    /**
+     * Permer de récupérer le User à qui appartient finalement la facture
+     * @Groups({"invoices_read","invoices_subresource"})
+     *
+     * @return User
+     */
     public function getUser(): User
     {
-      return $this->customer->getUser();  
+        return $this->customer->getUser();
     }
 
     public function getId(): ?int

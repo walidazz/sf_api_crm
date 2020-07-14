@@ -25,13 +25,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"customers_read","invoices_read"})
+     * @Groups({"customers_read","invoices_read","invoices_subresource"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="json")
-     * @Groups({"customers_read","invoices_read"})
+     * @Groups({"customers_read","invoices_read","invoices_subresource"})
      */
     private $roles = [];
 
@@ -43,13 +43,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"customers_read","invoices_read"})
+     * @Groups({"customers_read","invoices_read","invoices_subresource"})
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"customers_read","invoices_read"})
+     * @Groups({"customers_read","invoices_read","invoices_subresource"})
      */
     private $lastName;
 
