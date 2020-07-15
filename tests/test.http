@@ -1,2 +1,2 @@
-POST https://127.0.0.1:8000/api/customers/6222/invoices 
+POST https://127.0.0.1:8000/api/invoices/6222/increment
 Content-Type: application/json
